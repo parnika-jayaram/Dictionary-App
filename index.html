@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dictionary App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body, h1, h2, h3, h4, h5, h6 {
+            font-family: "Raleway", Arial, Helvetica, sans-serif;
+        }
+        .myLink {
+            display: none;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+<!-- Navigation Bar -->
+<div class="w3-bar w3-cyan w3-border-bottom w3-xlarge">
+    <a href="#" class="w3-bar-item w3-button w3-text-white w3-hover-cyan">
+        <b><i class="fa fa-book w3-margin-right"></i>The Dictionary App</b>
+    </a>
+</div>
+
+<!-- Header -->
+<header class="w3-display-container w3-content w3-hide-small" style="max-width:1500px">
+    <img class="w3-image" src="https://wallpaperaccess.com/full/892736.jpg" alt="https://wallpaperaccess.com/full/892736.jpg" width="1500" height="400">
+   <div class="w3-display-middle" style="width:70%">    
+    <div class="w3-bar w3-black">
+        <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'DictionaryApp');">
+            <i class="fa fa-book w3-margin-right"></i>Dictionary App
+        </button>
+        <button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'FindWord');">
+            <i class="fa fa-search w3-margin-right"></i>Find a Word
+        </button>
+    </div>
+
+    <!-- Tabs -->
+    <div id="DictionaryApp" class="w3-container w3-white w3-padding-16 myLink">
+        <h3>Weaving Words into Your Daily Tapestry</h3>
+        <p><span class="w3-tag w3-black">WORDS</span> Unlock the power of words with our intuitive dictionary app, where every definition is just a tap away!</p>
+        <h6>A dictionary is a linguistic treasure trove, a comprehensive reference tool containing words' meanings, pronunciations, and usage, serving as a guide for effective communication and language exploration.</h6>
+        <h3>Search and explore words effortlessly.</h3>
+    </div>
+
+    <div id="FindWord" class="w3-container w3-white w3-padding-16 myLink">
+        <h3>Can you find the word?</h3>
+        <div class="w3-row-padding" style="margin:0 -16px;">
+            <div class="w3-half">
+                <input class="w3-input w3-border" id="inp-word" type="text" placeholder="Type the word here...">
+            </div>
+        </div>
+        <p><button class="w3-button w3-dark-grey" id="search-btn">Search</button></p>
+
+        <div class="result" id="result"></div>
+        
+    </div></div>
+</header>
+
+<script>
+    const url = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+    const result = document.getElementById("result");
+    const sound = document.getElementById("sound");
+    const btn = document.getElementById("search-btn");
+
+    btn.addEventListener("click", () => {
+        let inpWord = document.getElementById("inp-word").value;
+        fetch(`${url}${inpWord}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+
+                if (data && data.length > 0) {
+                    const phonetic = data[0].phonetics && data[0].phonetics[0] ? `/${data[0].phonetics[0].text || "Not Available"}/` : "Not Available";
+
+                    result.innerHTML = `
+                        <div class="word">
+                            <h3>${inpWord}</h3>
+                        </div>
+                        <div class="details">
+                            <p>${data[0].meanings[0].partOfSpeech}</p>
+                            <p>${phonetic}</p>
+                        </div>
+                        <p class="word-meaning">
+                            ${data[0].meanings[0].definitions[0].definition}
+                        </p>
+                        <p class="word-example">${data[0].meanings[0].definitions[0].example || ""}</p>`;
+                } else {
+                    result.innerHTML = '<p class="error-message">Word not found. Please try another word.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                result.innerHTML = '<p class="error-message">Error fetching data. Please try again.</p>';
+            });
+    });
+
+
+
+    
+</script>
+
+<script>
+    // Tabs
+    function openLink(evt, linkName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("myLink");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < x.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" w3-cyan", "");
+        }
+        document.getElementById(linkName).style.display = "block";
+        evt.currentTarget.className += " w3-cyan";
+    }
+
+    // Click on the first tablink on load
+    document.getElementsByClassName("tablink")[0].click();
+</script>
+
+</body>
+</html>
